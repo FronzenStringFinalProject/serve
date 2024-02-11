@@ -5,8 +5,8 @@ use persistence::{ConnectSQL, SqlConfig};
 use router::{RootRouter, RouteFallback};
 use tower_http::{catch_panic::CatchPanicLayer, trace::TraceLayer};
 mod config;
-mod router;
 mod middlewares;
+mod router;
 fn main() {
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_all()
@@ -17,18 +17,17 @@ fn main() {
 }
 
 async fn entry() {
-
-
     ServerPrepare::with_config(config::ServeConfigure {
         address: SocketAddr::new(Ipv4Addr::LOCALHOST.into(), 6000),
         sql: SqlConfig {
             url: url::Url::parse("postgres://FrozenString:wyq020222@localhost/mydb")
                 .expect("Bad Url"),
         },
-    }).init_logger().expect("Init logger failure")
-    // init connections / service 
+    })
+    .init_logger()
+    .expect("Init logger failure")
+    // init connections / service
     .prepare_state(ConnectSQL)
-    
     // set service router
     .prepare_route(RootRouter)
     .prepare_route(RouteFallback)

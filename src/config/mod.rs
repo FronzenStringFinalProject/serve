@@ -1,6 +1,5 @@
 use std::net::SocketAddr;
 
-
 use axum_starter::{Configure, Provider};
 use persistence::SqlConfig;
 use serde::Deserialize;
