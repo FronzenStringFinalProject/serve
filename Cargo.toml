@@ -9,6 +9,7 @@ edition = "2021"
 axum = { version = "0.7.4"}
 axum-macros = "0.4.1"
 axum-starter = { version = "0.9.0", features = ["logger"] }
+figment = { version = "0.10.14", features = ["toml"] }
 log = "0.4.20"
 persistence = { version = "0.1.0", path = "../presistence", package = "presistence" }
 serde = { version = "1.0.196", features = ["derive"] }

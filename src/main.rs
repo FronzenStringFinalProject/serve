@@ -17,28 +17,22 @@ fn main() {
 }
 
 async fn entry() {
-    ServerPrepare::with_config(config::ServeConfigure {
-        address: SocketAddr::new(Ipv4Addr::LOCALHOST.into(), 6000),
-        sql: SqlConfig {
-            url: url::Url::parse("postgres://FrozenString:wyq020222@localhost/mydb")
-                .expect("Bad Url"),
-        },
-    })
-    .init_logger()
-    .expect("Init logger failure")
-    // init connections / service
-    .prepare_state(ConnectSQL)
-    // set service router
-    .prepare_route(RootRouter)
-    .prepare_route(RouteFallback)
-    // middleware
-    .layer(TraceLayer::new_for_http())
-    .layer(CatchPanicLayer::new())
-    .convert_state()
-    .preparing()
-    .await
-    .expect("Failure to Prepare start")
-    .launch()
-    .await
-    .expect("Service Error");
+    ServerPrepare::with_config(config::ServeConfigure::load())
+        .init_logger()
+        .expect("Init logger failure")
+        // init connections / service
+        .prepare_state(ConnectSQL)
+        // set service router
+        .prepare_route(RootRouter)
+        .prepare_route(RouteFallback)
+        // middleware
+        .layer(TraceLayer::new_for_http())
+        .layer(CatchPanicLayer::new())
+        .convert_state()
+        .preparing()
+        .await
+        .expect("Failure to Prepare start")
+        .launch()
+        .await
+        .expect("Service Error");
 }

@@ -1,6 +1,10 @@
 use std::net::SocketAddr;
 
 use axum_starter::{Configure, Provider};
+use figment::{
+    providers::{Format, Toml},
+    Figment,
+};
 use persistence::SqlConfig;
 use serde::Deserialize;
 use simple_logger::SimpleLogger;
@@ -25,5 +29,14 @@ impl ServeConfigure {
             .with_level(log::LevelFilter::Debug)
             .init()?;
         Ok(())
+    }
+}
+
+impl ServeConfigure {
+    pub fn load() -> Self {
+        Figment::new()
+            .merge(Toml::file("./Config.toml"))
+            .extract()
+            .expect("Failure to load configure")
     }
 }
