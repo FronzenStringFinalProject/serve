@@ -13,7 +13,7 @@ pub enum Error {
     #[error("Jwt Error: {0}")]
     Jwt(#[from] jsonwebtoken::errors::Error),
     #[error("Database Error: {0}")]
-    DbError(#[from] DbErr),
+    Db(#[from] DbErr),
     #[error("Db connection instance not found")]
     ConnectNotFound,
     #[error("Parent[id={0}] not found")]

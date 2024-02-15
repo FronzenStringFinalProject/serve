@@ -42,10 +42,10 @@ impl ParentClaims {
         }
     }
 
-    pub fn to_child(&mut self, child_id: i32) {
+    pub fn child_mode(&mut self, child_id: i32) {
         self.child = child_id.into()
     }
-    pub fn to_parent(&mut self) {
+    pub fn parent_mode(&mut self) {
         self.child = None
     }
 }

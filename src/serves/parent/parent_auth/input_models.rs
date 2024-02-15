@@ -9,14 +9,14 @@ pub(super) struct ParentRegister {
     pub secret: String,
 }
 
-impl Into<NewParent> for ParentRegister {
-    fn into(self) -> NewParent {
+impl From<ParentRegister> for NewParent {
+    fn from(val: ParentRegister) -> Self {
         let ParentRegister {
             name,
             id,
             password,
             secret,
-        } = self;
+        } = val;
         NewParent::builder()
             .name(name)
             .identity(id)

@@ -50,9 +50,9 @@ impl ParentAuthController {
         Json(ParentSecret { secret }): Json<ParentSecret>,
     ) -> Result<String> {
         let mut claim = ParentClaims::from_model(&model);
-        if let Some(_) = child {
+        if child.is_some() {
             if model.secret == secret {
-                claim.to_parent();
+                claim.parent_mode();
                 Ok(claim.encode()?)
             } else {
                 Err(Error::BadSecret)
@@ -67,7 +67,7 @@ impl ParentAuthController {
         Path(cid): Path<i32>,
     ) -> Result<String> {
         let mut claim = ParentClaims::from_model(&model);
-        claim.to_child(cid);
+        claim.child_mode(cid);
         Ok(claim.encode()?)
     }
 }

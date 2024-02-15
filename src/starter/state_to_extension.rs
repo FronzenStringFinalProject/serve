@@ -13,10 +13,9 @@ where
     type Middleware = Extension<S>;
 
     fn take(self, states: &mut axum_starter::StateCollector) -> Self::Middleware {
-        let s = states.take::<S>().expect(&format!(
-            "type[{}] not found in collectors",
-            type_name::<S>()
-        ));
+        let s = states
+            .take::<S>()
+            .unwrap_or_else(|_| panic!("type[{}] not found in collectors", type_name::<S>()));
         states.insert(s.clone());
         Extension(s)
     }
