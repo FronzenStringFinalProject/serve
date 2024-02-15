@@ -3,6 +3,7 @@ use std::sync::OnceLock;
 use jsonwebtoken::{
     decode, encode, errors, Algorithm, DecodingKey, EncodingKey, Header, Validation,
 };
+use persistence::sea_orm::ModelTrait;
 use rand::RngCore;
 use serde::{Deserialize, Serialize};
 
@@ -43,4 +44,10 @@ where
         )?;
         Ok(res.claims)
     }
+}
+
+pub trait FromModel {
+    type Model: ModelTrait;
+
+    fn from_model(model: &Self::Model) -> Self;
 }

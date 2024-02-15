@@ -1,12 +1,21 @@
 use jsonwebtoken::get_current_timestamp;
+use persistence::entities::children;
 use serde::{Deserialize, Serialize};
 
-use super::JwtConvert;
+use super::{FromModel, JwtConvert};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChildClaim {
     exp: usize,
     child_id: i32,
+}
+
+impl FromModel for ChildClaim {
+    type Model = children::Model;
+
+    fn from_model(model: &Self::Model) -> Self {
+        Self::new(model.cid)
+    }
 }
 
 impl JwtConvert for ChildClaim {}
