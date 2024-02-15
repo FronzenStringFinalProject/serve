@@ -1,11 +1,16 @@
+use axum::routing::Route;
 use axum_starter::ServerPrepare;
-use persistence::ConnectSQL;
+use persistence::{ConnectSQL, PersistenceConnection};
 use router::{RootRouter, RouteFallback};
+use starter::StateToExtension;
+use tokio::signal::ctrl_c;
 use tower_http::{catch_panic::CatchPanicLayer, trace::TraceLayer};
 mod authorize;
 mod config;
 mod middlewares;
 mod router;
+mod serves;
+mod starter;
 fn main() {
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_all()
@@ -27,7 +32,12 @@ async fn entry() {
         // middleware
         .layer(TraceLayer::new_for_http())
         .layer(CatchPanicLayer::new())
+        // move state
+        .prepare_middleware::<Route, _>(StateToExtension::<_, PersistenceConnection>)
         .convert_state()
+        .graceful_shutdown(async {
+            ctrl_c().await.ok();
+        })
         .preparing()
         .await
         .expect("Failure to Prepare start")

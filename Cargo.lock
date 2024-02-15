@@ -209,6 +209,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum-resp-result"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60785130f7acb9ccc5b28001ba294e0e5051b7cdfdcdc3849ce2b3ff69390da9"
+dependencies = [
+ "axum",
+ "axum-resp-result-macro",
+ "futures",
+ "http",
+ "mime",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+ "tracing-unwrap",
+]
+
+[[package]]
+name = "axum-resp-result-macro"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "28611ebaac17e08aec9c96a388812f4989e03639d335bf702155e5c82f60a806"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.48",
+]
+
+[[package]]
 name = "axum-starter"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1131,14 +1161,17 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum-macros",
+ "axum-resp-result",
  "axum-starter",
  "figment",
+ "http",
  "jsonwebtoken",
  "log",
  "presistence",
  "rand",
  "serde",
  "simple_logger",
+ "thiserror",
  "tokio",
  "tower",
  "tower-http",
@@ -1475,6 +1508,7 @@ dependencies = [
  "futures",
  "sea-orm",
  "serde",
+ "typed-builder",
  "url",
 ]
 
@@ -1938,6 +1972,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-hook-registry"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d8229b473baa5980ac72ef434c4415e70c4b5e71b423043adb4ba059f89c99a1"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "signature"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2352,18 +2395,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.56"
+version = "1.0.57"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d54378c645627613241d077a3a79db965db602882668f9136ac42af9ecb730ad"
+checksum = "1e45bcbe8ed29775f228095caf2cd67af7a4ccf756ebff23a306bf3e8b47b24b"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.56"
+version = "1.0.57"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa0faa943b50f3db30a20aa7e265dbc66076993efed8463e8de414e5d06d3471"
+checksum = "a953cb265bef375dae3de6663da4d3804eee9682ea80d8e2542529b73c531c81"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2429,6 +2472,7 @@ dependencies = [
  "libc",
  "mio",
  "pin-project-lite",
+ "signal-hook-registry",
  "socket2",
  "tokio-macros",
  "windows-sys 0.48.0",
@@ -2593,6 +2637,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c06d3da6113f116aaee68e4d601191614c9053067f9ab7f6edbcb161237daa54"
 dependencies = [
  "once_cell",
+]
+
+[[package]]
+name = "tracing-unwrap"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77934bd2f10b38daeb37d0e24fb94f7bb83e08b474a0568d6ba71876c797c02e"
+dependencies = [
+ "tracing",
 ]
 
 [[package]]
