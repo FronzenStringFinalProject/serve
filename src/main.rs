@@ -1,9 +1,8 @@
-use std::net::{Ipv4Addr, SocketAddr};
-
 use axum_starter::ServerPrepare;
-use persistence::{ConnectSQL, SqlConfig};
+use persistence::ConnectSQL;
 use router::{RootRouter, RouteFallback};
 use tower_http::{catch_panic::CatchPanicLayer, trace::TraceLayer};
+mod authorize;
 mod config;
 mod middlewares;
 mod router;
