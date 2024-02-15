@@ -1,6 +1,5 @@
 use axum::{
     http::{StatusCode, Uri},
-    routing::get,
     Router,
 };
 use axum_macros::FromRef;
@@ -11,13 +10,15 @@ use axum_starter::{
 };
 
 use persistence::PersistenceConnection;
+
+use crate::serves::{ParentController, RouterExt};
 #[derive(Debug, Clone, FromStateCollector, FromRef)]
 pub struct ServeState {
     db: PersistenceConnection,
 }
 
 pub fn root_router() -> Router<ServeState> {
-    Router::new().route("/echo", get(|| async { "Hallo world" }))
+    Router::new().add_controller(ParentController)
 }
 
 #[prepare(RootRouter)]
