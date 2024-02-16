@@ -17,8 +17,10 @@ use crate::authorize::{
 
 use super::ParentAuthorizeState;
 
-pub async fn authorize(mut request: Request<Body>) -> Result<Request<Body>, Response<Body>> {
-    let result = preform_authorize(&mut request).await;
+pub async fn authorize<const CHILD_MODE: bool, const PARENT_MODE: bool>(
+    mut request: Request<Body>,
+) -> Result<Request<Body>, Response<Body>> {
+    let result = preform_authorize(&mut request, CHILD_MODE, PARENT_MODE).await;
     if let this @ RespResult::Err(_) = result {
         Err(this.into_response())
     } else {
@@ -27,7 +29,11 @@ pub async fn authorize(mut request: Request<Body>) -> Result<Request<Body>, Resp
 }
 
 #[resp_result]
-async fn preform_authorize(req: &mut Request<Body>) -> Result<(), Error> {
+async fn preform_authorize(
+    req: &mut Request<Body>,
+    child_mode: bool,
+    parent_mode: bool,
+) -> Result<(), Error> {
     let token = req
         .headers()
         .get(http::header::AUTHORIZATION)
@@ -41,6 +47,15 @@ async fn preform_authorize(req: &mut Request<Body>) -> Result<(), Error> {
         child,
         ..
     } = ParentClaims::decode(token)?;
+
+    // need in child mode, but not in child mode
+    if child_mode && child.is_none() {
+        Err(Error::ExpectInChildMode)?;
+    }
+    // need in parent mode, but not in parent mode
+    if parent_mode && child.is_some() {
+        Err(Error::ExpectInParentMode)?;
+    }
 
     let db = req
         .extensions()

@@ -18,6 +18,10 @@ pub enum Error {
     ConnectNotFound,
     #[error("Parent[id={0}] not found")]
     ParentNotFound(i32),
+    #[error("Expect In Parent Mode, But In Child Mode")]
+    ExpectInParentMode,
+    #[error("Expect In Child Mode, but In Parent Mode")]
+    ExpectInChildMode,
 }
 
 impl RespError for Error {
