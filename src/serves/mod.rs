@@ -1,3 +1,4 @@
+mod children;
 mod parent;
 use axum::Router;
 
@@ -10,12 +11,18 @@ pub trait ControllerRouter {
 
 pub trait RouterExt: Sized {
     fn add_controller<C: ControllerRouter>(self, controller: C) -> Self;
+    fn merge_controller<C: ControllerRouter>(self, controller: C) -> Self;
 }
 
 impl RouterExt for Router<ServeState> {
     fn add_controller<C: ControllerRouter>(self, controller: C) -> Self {
         self.nest(controller.base(), controller.router())
     }
+
+    fn merge_controller<C: ControllerRouter>(self, controller: C) -> Self {
+        self.merge(controller.router())
+    }
 }
 
+pub use children::ChildrenController;
 pub use parent::ParentController;

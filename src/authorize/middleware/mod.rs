@@ -77,3 +77,11 @@ async fn preform_authorize(
 
     Ok(())
 }
+// #[repr(u8)]
+// enum Mode {
+//     Parent,
+//     Child,
+//     None,
+// }
+
+// const fn check_stat<const MODE: Mode>() {}

@@ -6,6 +6,7 @@ use axum_resp_result::RespError;
 use persistence::sea_orm::DbErr;
 
 #[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
 pub enum Error {
     #[error("database error: {0}")]
     Sql(#[from] DbErr),

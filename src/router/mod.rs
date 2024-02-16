@@ -14,14 +14,16 @@ use axum_starter::{
 
 use persistence::PersistenceConnection;
 
-use crate::serves::{ParentController, RouterExt};
+use crate::serves::{ChildrenController, ParentController, RouterExt};
 #[derive(Debug, Clone, FromStateCollector, FromRef)]
 pub struct ServeState {
     db: PersistenceConnection,
 }
 
 pub fn root_router() -> Router<ServeState> {
-    Router::new().add_controller(ParentController)
+    Router::new()
+        .add_controller(ParentController)
+        .add_controller(ChildrenController)
 }
 
 #[prepare(RootRouter)]
