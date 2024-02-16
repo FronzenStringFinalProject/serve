@@ -1,7 +1,7 @@
 use axum::extract::{Path, State};
 use axum::{Extension, Json};
 
-use axum_resp_result::resp_result;
+use axum_resp_result::{resp_result, MapReject};
 use persistence::operations::{OperateTrait, ParentOperate};
 use persistence::PersistenceConnection;
 
@@ -9,7 +9,7 @@ use crate::authorize::user_tokens::parent::ParentClaims;
 use crate::authorize::user_tokens::{FromModel, JwtConvert};
 use crate::authorize::ParentAuthorizeState;
 
-use super::error::{Error, Result};
+use super::error::{Error, MapRejecter, Result};
 use super::input_models::{ParentLogin, ParentRegister, ParentSecret};
 use super::ParentAuthController;
 
@@ -17,7 +17,7 @@ impl ParentAuthController {
     #[resp_result]
     pub async fn register(
         State(db): State<PersistenceConnection>,
-        Json(new_parent): Json<ParentRegister>,
+        MapReject(new_parent): MapRejecter<Json<ParentRegister>>,
     ) -> Result<()> {
         ParentOperate
             .insert()
@@ -28,7 +28,7 @@ impl ParentAuthController {
     #[resp_result]
     pub async fn login(
         State(db): State<PersistenceConnection>,
-        Json(ParentLogin { unique_id, pwd }): Json<ParentLogin>,
+        MapReject(ParentLogin { unique_id, pwd }): MapRejecter<Json<ParentLogin>>,
     ) -> Result<String> {
         let model = ParentOperate
             .retrieve()
@@ -47,7 +47,7 @@ impl ParentAuthController {
     #[resp_result]
     pub async fn access(
         Extension(ParentAuthorizeState { model, child }): Extension<ParentAuthorizeState>,
-        Json(ParentSecret { secret }): Json<ParentSecret>,
+        MapReject(ParentSecret { secret }): MapRejecter<Json<ParentSecret>>,
     ) -> Result<String> {
         let mut claim = ParentClaims::from_model(&model);
         if child.is_some() {
@@ -64,7 +64,7 @@ impl ParentAuthController {
     #[resp_result]
     pub async fn child(
         Extension(ParentAuthorizeState { model, .. }): Extension<ParentAuthorizeState>,
-        Path(cid): Path<i32>,
+        MapReject(cid): MapRejecter<Path<i32>>,
     ) -> Result<String> {
         let mut claim = ParentClaims::from_model(&model);
         claim.child_mode(cid);

@@ -1,4 +1,7 @@
-use axum::http::StatusCode;
+use axum::{
+    extract::rejection::{JsonRejection, PathRejection},
+    http::StatusCode,
+};
 use axum_resp_result::RespError;
 use persistence::sea_orm::DbErr;
 
@@ -14,24 +17,20 @@ pub enum Error {
     Jwt(#[from] jsonwebtoken::errors::Error),
     #[error("access secret not match")]
     BadSecret,
+    #[error("Deserialize Json Error: {0}")]
+    Json(#[from] JsonRejection),
+    #[error("Read Path arguments Error: {0}")]
+    Path(#[from] PathRejection),
 }
 
 impl RespError for Error {
-    fn resp_message(&self) -> std::borrow::Cow<'_, str> {
-        self.log_message()
-    }
-
     fn http_code(&self) -> axum::http::StatusCode {
         match self {
             Error::ParentNotFound(_) => StatusCode::NOT_FOUND,
             Error::BadSecret | Error::Password => StatusCode::UNAUTHORIZED,
-
+            Error::Json(_) | Error::Path(_) => StatusCode::BAD_REQUEST,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
-    }
-
-    fn resp_message_default() -> Option<std::borrow::Cow<'static, str>> {
-        None
     }
 
     fn log_message(&self) -> std::borrow::Cow<'_, str> {
@@ -40,3 +39,4 @@ impl RespError for Error {
 }
 
 pub(super) type Result<T> = core::result::Result<T, Error>;
+pub(super) type MapRejecter<T> = axum_resp_result::MapReject<T, Error>;

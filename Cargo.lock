@@ -210,9 +210,9 @@ dependencies = [
 
 [[package]]
 name = "axum-resp-result"
-version = "0.6.2"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "60785130f7acb9ccc5b28001ba294e0e5051b7cdfdcdc3849ce2b3ff69390da9"
+checksum = "2829cf17b510e077ce4feb8c2e9679c1f16b653b7825c6b7684f9c0b8c40637d"
 dependencies = [
  "axum",
  "axum-resp-result-macro",
@@ -229,9 +229,9 @@ dependencies = [
 
 [[package]]
 name = "axum-resp-result-macro"
-version = "0.6.1"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28611ebaac17e08aec9c96a388812f4989e03639d335bf702155e5c82f60a806"
+checksum = "e94ab7f35555ad86d707100ac8a5105001d74f28df766f52da51a215d5c91517"
 dependencies = [
  "proc-macro2",
  "quote",
