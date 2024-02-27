@@ -14,7 +14,7 @@ impl ControllerRouter for ChildrenQuizController {
     fn router(&self) -> axum::Router<crate::router::ServeState> {
         Router::new()
             .route("/quiz", get(Self::next))
-            .route("/submit", post(Self::submit))
+            .route("/quiz/submit", post(Self::submit))
     }
 
     fn base(&self) -> &str {

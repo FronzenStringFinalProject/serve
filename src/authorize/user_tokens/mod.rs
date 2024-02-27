@@ -16,7 +16,7 @@ fn get_secret_key() -> &'static [u8] {
     SECRET_KEY.get_or_init(|| {
         let mut ran = rand::thread_rng();
         let mut buf = [0u8; 256];
-        ran.fill_bytes(&mut buf);
+        // ran.fill_bytes(&mut buf);
         buf
     })
 }

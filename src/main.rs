@@ -1,10 +1,13 @@
+use axum::middleware::{map_response_with_state, MapResponseLayer};
 use axum::routing::Route;
 use axum_starter::ServerPrepare;
 use persistence::{ConnectSQL, PersistenceConnection};
 use router::{RootRouter, RouteFallback};
 use starter::StateToExtension;
 use tokio::signal::ctrl_c;
+use tower_http::cors::{AllowMethods, AllowOrigin, Any, CorsLayer};
 use tower_http::{catch_panic::CatchPanicLayer, trace::TraceLayer};
+
 mod authorize;
 mod config;
 mod middlewares;
@@ -31,6 +34,12 @@ async fn entry() {
         .prepare_route(RouteFallback)
         // middleware
         .layer(TraceLayer::new_for_http())
+        .layer(
+            CorsLayer::new()
+                .allow_methods(AllowMethods::any())
+                .allow_origin(AllowOrigin::any())
+                .allow_headers(Any),
+        )
         .layer(CatchPanicLayer::new())
         // move state
         .prepare_middleware::<Route, _>(StateToExtension::<_, PersistenceConnection>)

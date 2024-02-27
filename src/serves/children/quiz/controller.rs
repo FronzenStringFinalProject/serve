@@ -20,7 +20,7 @@ impl ChildrenQuizController {
         Extension(ParentAuthorizeState { child, .. }): Extension<ParentAuthorizeState>,
     ) -> Result<Quiz> {
         let ret =
-            ChildQuizService::next_quiz(&db, child.ok_or(Error::ExpectInChildMode)?, 0.5, 1.0)
+            ChildQuizService::next_quiz(&db, child.ok_or(Error::ExpectInChildMode)?, 0.2, 1.0)
                 .await?
                 .ok_or(Error::ChildNotFound)?
                 .into();
@@ -32,10 +32,10 @@ impl ChildrenQuizController {
         State(db): State<PersistenceConnection>,
         Extension(ParentAuthorizeState { child, .. }): Extension<ParentAuthorizeState>,
         MapReject(QuizAns { id, ans }): super::MapRejector<Json<QuizAns>>,
-    ) -> Result<()> {
+    ) -> Result<bool> {
         let child_id = child.ok_or(Error::ExpectInChildMode)?;
         // save record
-        ChildQuizService::new_ans_record(&db, child_id, id, ans).await?;
+        let correct = ChildQuizService::new_ans_record(&db, child_id, id, ans).await?;
         // get recent records;
         let records = ChildQuizService::get_ans_quiz_by_child_id(&db, child_id, 25)
             .await?
@@ -44,13 +44,13 @@ impl ChildrenQuizController {
                 |ChildQuizAns {
                      diff,
                      disc,
-                     lambdas,
+                     lambda,
                      correct,
                      ..
                  }| AnsweredQuiz {
                     diff,
                     disc,
-                    lambdas,
+                    lambdas: lambda,
                     correct,
                 },
             )
@@ -61,6 +61,6 @@ impl ChildrenQuizController {
             .update()
             .ability(&db, child_id, ability)
             .await?;
-        Ok(())
+        Ok(correct)
     }
 }

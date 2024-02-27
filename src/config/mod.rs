@@ -19,7 +19,6 @@ use typed_builder::TypedBuilder;
 pub struct ServeConfigure {
     #[provider(ignore_global, transparent)]
     pub address: SocketAddr,
-
     pub sql: SqlConfig,
 }
 
