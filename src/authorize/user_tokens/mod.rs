@@ -4,7 +4,6 @@ use jsonwebtoken::{
     decode, encode, errors, Algorithm, DecodingKey, EncodingKey, Header, Validation,
 };
 use persistence::sea_orm::ModelTrait;
-use rand::RngCore;
 use serde::{Deserialize, Serialize};
 
 pub mod child;
@@ -14,10 +13,11 @@ static SECRET_KEY: std::sync::OnceLock<[u8; 256]> = OnceLock::new();
 
 fn get_secret_key() -> &'static [u8] {
     SECRET_KEY.get_or_init(|| {
-        let mut ran = rand::thread_rng();
-        let mut buf = [0u8; 256];
+        // let mut ran = rand::thread_rng();
+        // let mut buf = [0u8; 256];
         // ran.fill_bytes(&mut buf);
-        buf
+        // buf
+        [0u8; 256]
     })
 }
 
