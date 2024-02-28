@@ -1,4 +1,4 @@
-use persistence::service::next_quiz::QuizFetched;
+use persistence::service::child_quiz_service::next_quiz::QuizFetched;
 use serde::Serialize;
 use typed_builder::TypedBuilder;
 

@@ -4,3 +4,15 @@ use serde::Deserialize;
 pub struct NewChild {
     pub name: String,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct ChildId {
+    pub cid: i32,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct StaticalInput {
+    #[serde(flatten)]
+    pub child: ChildId,
+    pub resent_days: Option<u32>,
+}

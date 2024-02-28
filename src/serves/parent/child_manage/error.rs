@@ -10,6 +10,8 @@ pub enum Error {
     Json(#[from] JsonRejection),
     #[error("Database Error:{0}")]
     Db(#[from] DbErr),
+    #[error("Child Id [{0}] Not Exist")]
+    ChildNotFound(i32),
 }
 
 impl RespError for Error {
