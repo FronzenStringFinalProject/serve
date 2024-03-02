@@ -38,6 +38,6 @@ pub(super) struct ParentSecret {
 }
 
 #[derive(Debug, Deserialize)]
-pub (super)struct ChildId{
-    pub cid:i32
+pub(super) struct ChildId {
+    pub cid: i32,
 }

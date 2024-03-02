@@ -12,7 +12,7 @@ pub struct ParentAuthorizeState<M: ChildMark = ParentMode> {
 }
 
 mod private {
-    pub(super) trait Seal {}
+    pub trait Seal {}
 }
 
 pub trait ChildMark: Seal + Copy {
