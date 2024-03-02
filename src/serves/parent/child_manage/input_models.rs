@@ -12,7 +12,6 @@ pub struct ChildId {
 
 #[derive(Debug, Deserialize)]
 pub struct StaticalInput {
-    #[serde(flatten)]
-    pub child: ChildId,
+    pub cid: i32,
     pub resent_days: Option<u32>,
 }

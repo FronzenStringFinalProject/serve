@@ -36,3 +36,8 @@ pub(super) struct ParentLogin {
 pub(super) struct ParentSecret {
     pub secret: String,
 }
+
+#[derive(Debug, Deserialize)]
+pub (super)struct ChildId{
+    pub cid:i32
+}

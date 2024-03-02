@@ -1,8 +1,10 @@
-use axum::extract::{Path, Query};
+use axum::extract::Query;
 use axum::{extract::State, Extension, Json};
 use axum_resp_result::{resp_result, MapReject};
 use log::info;
-use persistence::service::child_quiz_service::child_statical::{ChildStaticalItem, ResentType};
+use persistence::service::child_quiz_service::child_statical::{
+    ChildQuizGroupStaticalItem, ChildResentCorrectStaticalItem, ResentType,
+};
 use persistence::service::parent_child_service::all_children::ChildItem;
 use persistence::service::{ChildQuizService, DbService, ParentChildService};
 use persistence::{
@@ -53,16 +55,22 @@ impl super::ChildManageController {
         Ok(child)
     }
     #[resp_result]
-    pub async fn statical(
+    pub async fn quiz_group_statical(
         DbService(service): DbService<ChildQuizService>,
-        Query(StaticalInput {
-            child: ChildId { cid },
-            resent_days,
-        }): Query<StaticalInput>,
-    ) -> Result<Vec<ChildStaticalItem>> {
+        Query(StaticalInput { cid, resent_days }): Query<StaticalInput>,
+    ) -> Result<Vec<ChildQuizGroupStaticalItem>> {
         let ret = service
-            .child_statical(cid, ResentType::Days(resent_days.unwrap_or(30)))
+            .child_quiz_group_statical(cid, ResentType::Days(resent_days.unwrap_or(30)))
             .await?;
         Ok(ret)
+    }
+    #[resp_result]
+    pub async fn resent_correct_statical(
+        DbService(service): DbService<ChildQuizService>,
+        Query(StaticalInput { cid, resent_days }): Query<StaticalInput>,
+    ) -> Result<Vec<ChildResentCorrectStaticalItem>> {
+        Ok(service
+            .child_resent_correct_statical(cid, ResentType::Days(resent_days.unwrap_or(30)))
+            .await?)
     }
 }

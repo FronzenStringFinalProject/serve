@@ -18,7 +18,14 @@ impl ControllerRouter for ChildManageController {
             .route("/children", post(Self::add))
             .route("/children/all", get(Self::all))
             .route("/children", get(Self::basic))
-            .route("/children/statical", get(Self::statical))
+            .route(
+                "/children/statical/quiz_group",
+                get(Self::quiz_group_statical),
+            )
+            .route(
+                "/children/statical/correct_trend",
+                get(Self::resent_correct_statical),
+            )
             .layer(AsyncRequireAuthorizationLayer::new(
                 authorize::<false, true>,
             ))
