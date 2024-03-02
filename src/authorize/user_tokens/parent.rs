@@ -2,7 +2,7 @@ use jsonwebtoken::get_current_timestamp;
 use persistence::entities::parent;
 use serde::{Deserialize, Serialize};
 
-use crate::authorize::ParentAuthorizeState;
+use crate::authorize::{ChildMark, ParentAuthorizeState};
 
 use super::{FromModel, JwtConvert};
 
@@ -14,10 +14,10 @@ pub struct ParentClaims {
     pub child: Option<i32>,
 }
 
-impl From<ParentAuthorizeState> for ParentClaims {
-    fn from(ParentAuthorizeState { model, child }: ParentAuthorizeState) -> Self {
+impl<M: ChildMark> From<ParentAuthorizeState<M>> for ParentClaims {
+    fn from(ParentAuthorizeState { model, child }: ParentAuthorizeState<M>) -> Self {
         let mut this = Self::from_model(&model);
-        this.child = child;
+        this.child = child.child_id();
         this
     }
 }

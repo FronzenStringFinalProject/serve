@@ -9,7 +9,7 @@ use persistence::{
     PersistenceConnection,
 };
 
-use crate::authorize::ParentAuthorizeState;
+use crate::authorize::{ChildMode, ParentAuthorizeState};
 
 use super::{
     error::Error, input_models::QuizAns, output_models::Quiz, ChildrenQuizController, Result,
@@ -19,10 +19,13 @@ impl ChildrenQuizController {
     #[resp_result]
     pub async fn next(
         DbService(service): DbService<ChildQuizService>,
-        Extension(ParentAuthorizeState { child, .. }): Extension<ParentAuthorizeState>,
+        Extension(ParentAuthorizeState {
+            child: ChildMode(cid),
+            ..
+        }): Extension<ParentAuthorizeState<ChildMode>>,
     ) -> Result<Quiz> {
         let ret = service
-            .next_quiz(child.ok_or(Error::ExpectInChildMode)?, 0.2, 1.0)
+            .next_quiz(cid, 0.2, 1.0)
             .await?
             .ok_or(Error::ChildNotFound)?
             .into();
@@ -33,10 +36,12 @@ impl ChildrenQuizController {
     pub async fn submit(
         DbService(service): DbService<ChildQuizService>,
         State(db): State<PersistenceConnection>,
-        Extension(ParentAuthorizeState { child, .. }): Extension<ParentAuthorizeState>,
+        Extension(ParentAuthorizeState {
+            child: ChildMode(child_id),
+            ..
+        }): Extension<ParentAuthorizeState<ChildMode>>,
         MapReject(QuizAns { id, ans }): super::MapRejector<Json<QuizAns>>,
     ) -> Result<bool> {
-        let child_id = child.ok_or(Error::ExpectInChildMode)?;
         // save record
         let correct = service.new_ans_record(child_id, id, ans).await?;
         // get recent records;

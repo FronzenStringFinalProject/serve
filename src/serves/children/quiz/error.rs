@@ -10,8 +10,6 @@ pub enum Error {
     Json(#[from] JsonRejection),
     #[error("Database Error: {0}")]
     Db(#[from] DbErr),
-    #[error("Expect In Child mode")]
-    ExpectInChildMode,
     #[error("Children not found")]
     ChildNotFound,
     #[error("Evaluate ability Error: {0}")]
@@ -26,7 +24,6 @@ impl RespError for Error {
     fn http_code(&self) -> http::StatusCode {
         match self {
             Error::Json(_) => StatusCode::BAD_REQUEST,
-            Error::ExpectInChildMode => StatusCode::UNAUTHORIZED,
             Error::ChildNotFound => StatusCode::NOT_FOUND,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }

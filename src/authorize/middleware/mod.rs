@@ -5,6 +5,7 @@ use axum::{
     response::IntoResponse,
 };
 use axum_resp_result::{resp_result, RespResult};
+use log::info;
 use persistence::{
     operations::{OperateTrait, ParentOperate},
     PersistenceConnection,
@@ -13,6 +14,7 @@ use persistence::{
 use crate::authorize::{
     middleware::error::Error,
     user_tokens::{parent::ParentClaims, JwtConvert},
+    ChildMode, ParentMode,
 };
 
 use super::ParentAuthorizeState;
@@ -47,7 +49,7 @@ async fn preform_authorize(
         child,
         ..
     } = ParentClaims::decode(token)?;
-
+    info!("current Token child Id is {:?}", child);
     // need in child mode, but not in child mode
     if child_mode && child.is_none() {
         Err(Error::ExpectInChildMode)?;
@@ -68,12 +70,19 @@ async fn preform_authorize(
         .await?
         .ok_or(Error::ParentNotFound(parent_id))?;
 
-    let state = ParentAuthorizeState::builder()
-        .child(child)
-        .model(model)
-        .build();
-
-    req.extensions_mut().insert(state);
+    if let Some(child_id) = child {
+        let state = ParentAuthorizeState::<ChildMode>::builder()
+            .child(ChildMode(child_id))
+            .model(model)
+            .build();
+        req.extensions_mut().insert(state);
+    } else {
+        let state = ParentAuthorizeState::builder()
+            .child(ParentMode)
+            .model(model)
+            .build();
+        req.extensions_mut().insert(state);
+    }
 
     Ok(())
 }

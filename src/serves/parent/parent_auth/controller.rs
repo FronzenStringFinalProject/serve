@@ -1,16 +1,17 @@
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
 use axum::{Extension, Json};
 
 use axum_resp_result::{resp_result, MapReject};
+use log::info;
 use persistence::operations::{OperateTrait, ParentOperate};
 use persistence::PersistenceConnection;
 
 use crate::authorize::user_tokens::parent::ParentClaims;
 use crate::authorize::user_tokens::{FromModel, JwtConvert};
-use crate::authorize::ParentAuthorizeState;
+use crate::authorize::{ChildMode, ParentAuthorizeState};
 
 use super::error::{Error, MapRejecter, Result};
-use super::input_models::{ParentLogin, ParentRegister, ParentSecret};
+use super::input_models::{ChildId, ParentLogin, ParentRegister, ParentSecret};
 use super::ParentAuthController;
 
 impl ParentAuthController {
@@ -38,6 +39,7 @@ impl ParentAuthController {
 
         if model.password == pwd {
             let claims = ParentClaims::from_model(&model);
+            info!("current claims is :{:?}", claims);
             let jwt = claims.encode()?;
             Ok(jwt)
         } else {
@@ -46,25 +48,21 @@ impl ParentAuthController {
     }
     #[resp_result]
     pub async fn access(
-        Extension(ParentAuthorizeState { model, child }): Extension<ParentAuthorizeState>,
+        Extension(ParentAuthorizeState { model, .. }): Extension<ParentAuthorizeState<ChildMode>>,
         MapReject(ParentSecret { secret }): MapRejecter<Json<ParentSecret>>,
     ) -> Result<String> {
         let mut claim = ParentClaims::from_model(&model);
-        if child.is_some() {
-            if model.secret == secret {
-                claim.parent_mode();
-                Ok(claim.encode()?)
-            } else {
-                Err(Error::BadSecret)
-            }
-        } else {
+        if model.secret == secret {
+            claim.parent_mode();
             Ok(claim.encode()?)
+        } else {
+            Err(Error::BadSecret)
         }
     }
     #[resp_result]
     pub async fn child(
         Extension(ParentAuthorizeState { model, .. }): Extension<ParentAuthorizeState>,
-        MapReject(cid): MapRejecter<Path<i32>>,
+        MapReject(ChildId { cid }): MapRejecter<Json<ChildId>>,
     ) -> Result<String> {
         let mut claim = ParentClaims::from_model(&model);
         claim.child_mode(cid);

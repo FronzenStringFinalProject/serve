@@ -1,3 +1,4 @@
+use axum::extract::rejection::ExtensionRejection;
 use axum::{
     extract::rejection::{JsonRejection, PathRejection},
     http::StatusCode,
@@ -22,9 +23,15 @@ pub enum Error {
     Json(#[from] JsonRejection),
     #[error("Read Path arguments Error: {0}")]
     Path(#[from] PathRejection),
+    #[error("Extension Item Not Found: {0}")]
+    Extension(#[from] ExtensionRejection),
 }
 
 impl RespError for Error {
+    fn log_message(&self) -> std::borrow::Cow<'_, str> {
+        self.to_string().into()
+    }
+
     fn http_code(&self) -> axum::http::StatusCode {
         match self {
             Error::ParentNotFound(_) => StatusCode::NOT_FOUND,
@@ -32,10 +39,6 @@ impl RespError for Error {
             Error::Json(_) | Error::Path(_) => StatusCode::BAD_REQUEST,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
-    }
-
-    fn log_message(&self) -> std::borrow::Cow<'_, str> {
-        self.to_string().into()
     }
 }
 
