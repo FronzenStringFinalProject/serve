@@ -1,3 +1,5 @@
+mod score;
+
 use axum::Router;
 
 use crate::serves::ControllerRouter;
