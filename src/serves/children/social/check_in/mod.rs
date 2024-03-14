@@ -14,9 +14,9 @@ pub struct ChildCheckInController;
 impl ControllerRouter for ChildCheckInController {
     fn router(&self) -> Router<ServeState> {
         Router::new()
-            .route("", post(Self::check))
-            .route("", get(Self::get_check_info))
-            .route("/month", get(Self::get_month_check_record))
+            .route("/check", post(Self::check))
+            .route("/check", get(Self::get_check_info))
+            .route("/check/month", get(Self::get_month_check_record))
     }
 
     fn base(&self) -> &str {

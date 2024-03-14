@@ -11,7 +11,7 @@ pub struct ChildScoreController;
 
 impl ControllerRouter for ChildScoreController {
     fn router(&self) -> Router<ServeState> {
-        Router::new().route("", get(Self::get_score))
+        Router::new().route("/score", get(Self::get_score))
     }
 
     fn base(&self) -> &str {
