@@ -50,11 +50,11 @@ impl ChildCheckInController {
             child: ChildMode(child_id),
             ..
         }): Extension<ParentAuthorizeState<ChildMode>>,
-        MapReject(SpecMonth { month }): MapRejecter<Query<SpecMonth>>,
+        MapReject(SpecMonth { month, year }): MapRejecter<Query<SpecMonth>>,
     ) -> Result<Vec<Date>> {
         let resp = ChildCheckOperate
             .retrieve()
-            .spec_month_check(&db, child_id, month.map(|month| month.0))
+            .spec_month_check(&db, child_id, month.map(|month| month.0), year)
             .await?;
 
         Ok(resp.into_iter().map(|item| item.check_date).collect())

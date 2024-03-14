@@ -3,6 +3,7 @@ use serde::{Deserialize, Deserializer};
 #[derive(Debug, Deserialize)]
 pub struct SpecMonth {
     pub month: Option<Month>,
+    pub year: Option<i32>,
 }
 
 #[derive(Debug)]
