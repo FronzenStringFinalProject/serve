@@ -15,6 +15,7 @@ impl ControllerRouter for ChildCheckInController {
     fn router(&self) -> Router<ServeState> {
         Router::new()
             .route("/check", post(Self::check))
+            .route("/check/available", get(Self::can_check))
             .route("/check", get(Self::get_check_info))
             .route("/check/month", get(Self::get_month_check_record))
     }

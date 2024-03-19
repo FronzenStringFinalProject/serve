@@ -22,6 +22,21 @@ impl ChildCheckInController {
         Ok(())
     }
     #[resp_result]
+    pub async fn can_check(
+        State(db): State<PersistenceConnection>,
+        Extension(ParentAuthorizeState {
+            child: ChildMode(child_id),
+            ..
+        }): Extension<ParentAuthorizeState<ChildMode>>,
+    ) -> Result<bool> {
+        let ab = ChildCheckOperate
+            .retrieve()
+            .can_check(&db, child_id)
+            .await?;
+        Ok(ab)
+    }
+
+    #[resp_result]
     pub async fn get_check_info(
         State(db): State<PersistenceConnection>,
         Extension(ParentAuthorizeState {

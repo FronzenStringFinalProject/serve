@@ -25,6 +25,9 @@ impl RespError for Error {
             Error::Query(_) => StatusCode::BAD_REQUEST,
         }
     }
+    fn resp_message(&self) -> Cow<'_, str> {
+        todo!()
+    }
 }
 
 pub type Result<T> = core::result::Result<T, Error>;
