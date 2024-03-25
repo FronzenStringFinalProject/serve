@@ -1,7 +1,10 @@
 use axum::extract::Query;
 use axum::{extract::State, Extension, Json};
 use axum_resp_result::{resp_result, MapReject};
+use chrono::NaiveDate;
 use log::info;
+use persistence::operations::ChildCheckOperate;
+use persistence::output_models::child_check::MonthlyCheckItem;
 use persistence::service::child_quiz_service::child_statical::{
     ChildQuizGroupStaticalItem, ChildResentCorrectStaticalItem, ResentType,
 };
@@ -12,9 +15,9 @@ use persistence::{
     PersistenceConnection,
 };
 
-use crate::authorize::ParentAuthorizeState;
-use crate::serves::parent::child_manage::input_models::{ChildId, StaticalInput};
-use crate::serves::parent::child_manage::output_models::BaseChildInfo;
+use crate::authorize::{ChildMode, ParentAuthorizeState};
+use crate::serves::parent::child_manage::input_models::{ChildCheckRecord, ChildId, StaticalInput};
+use crate::serves::parent::child_manage::output_models::{BaseChildInfo, CheckTotalInfo};
 
 use super::{input_models::NewChild, MapRejector, Result};
 
@@ -72,5 +75,38 @@ impl super::ChildManageController {
         Ok(service
             .child_resent_correct_statical(cid, ResentType::Days(resent_days.unwrap_or(30)))
             .await?)
+    }
+    #[resp_result]
+    pub async fn child_month_check(
+        State(db): State<PersistenceConnection>,
+        MapReject(ChildCheckRecord { cid, month, year }): MapRejector<Query<ChildCheckRecord>>,
+    ) -> Result<Vec<NaiveDate>> {
+        let list = ChildCheckOperate
+            .retrieve()
+            .spec_month_check(&db, cid, Some(month), Some(year))
+            .await?
+            .into_iter()
+            .map(|MonthlyCheckItem { check_date }| check_date)
+            .collect();
+        Ok(list)
+    }
+
+    #[resp_result]
+    pub async fn get_check_info(
+        State(db): State<PersistenceConnection>,
+        MapReject(ChildId { cid: child_id }): MapRejector<Query<ChildId>>,
+    ) -> Result<CheckTotalInfo> {
+        let continual_days = ChildCheckOperate
+            .retrieve()
+            .continual_check_days(&db, child_id)
+            .await?;
+        let total = ChildCheckOperate
+            .retrieve()
+            .total_check(&db, child_id)
+            .await?;
+        Ok(CheckTotalInfo::builder()
+            .total(total)
+            .continual(continual_days)
+            .build())
     }
 }

@@ -1,4 +1,5 @@
 use serde::Serialize;
+use typed_builder::TypedBuilder;
 
 #[derive(Debug, Serialize)]
 pub struct BaseChildInfo {
@@ -15,4 +16,9 @@ impl From<persistence::entities::children::Model> for BaseChildInfo {
             ability: value.ability,
         }
     }
+}
+#[derive(Debug, Serialize, TypedBuilder)]
+pub struct CheckTotalInfo {
+    total: u64,
+    continual: i64,
 }

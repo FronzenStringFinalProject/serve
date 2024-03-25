@@ -26,6 +26,8 @@ impl ControllerRouter for ChildManageController {
                 "/children/statical/correct_trend",
                 get(Self::resent_correct_statical),
             )
+            .route("/children/check", get(Self::child_month_check))
+            .route("/children/statical/check", get(Self::get_check_info))
             .layer(AsyncRequireAuthorizationLayer::new(
                 authorize::<false, true>,
             ))

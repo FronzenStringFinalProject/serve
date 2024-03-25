@@ -47,8 +47,7 @@ impl ChildCheckInController {
         let continual_days = ChildCheckOperate
             .retrieve()
             .continual_check_days(&db, child_id)
-            .await?
-            .ok_or(Error::NoRecord)?;
+            .await?;
         let total = ChildCheckOperate
             .retrieve()
             .total_check(&db, child_id)
