@@ -1,19 +1,15 @@
+use super::MapRejector;
 use super::Result;
 use crate::authorize::{ChildMode, ParentAuthorizeState};
-use super::MapRejector;
 use crate::serves::children::manage::input_models::QuizGroup;
-use axum::{
-    extract::State,
-    Extension,
-    Json
-};
+use axum::{extract::State, Extension, Json};
 use axum_resp_result::{resp_result, MapReject};
 use persistence::{
     operations::ChildQuizGroupOperate,
     operations::OperateTrait,
     service::child_quiz_service::fetch_quiz_group::QuizGroupItem,
     service::{ChildQuizService, DbService},
-    PersistenceConnection
+    PersistenceConnection,
 };
 
 impl super::ChildManagerController {
