@@ -3,6 +3,8 @@ use axum::Extension;
 use axum_resp_result::resp_result;
 use persistence::operations::{ChildCheckOperate, OperateTrait};
 use persistence::sea_orm::prelude::Date;
+use persistence::service::child_social::ChildRank;
+use persistence::service::{ChildSocialService, DbService};
 use persistence::PersistenceConnection;
 
 use crate::authorize::{ChildMode, ParentAuthorizeState};
@@ -74,5 +76,20 @@ impl ChildCheckInController {
             .await?;
 
         Ok(resp.into_iter().map(|item| item.check_date).collect())
+    }
+
+    #[resp_result]
+    pub async fn get_check_in_rank(
+        DbService(service): DbService<ChildSocialService>,
+        Extension(ParentAuthorizeState {
+            child: ChildMode(child_id),
+            ..
+        }): Extension<ParentAuthorizeState<ChildMode>>,
+    ) -> Result<ChildRank> {
+        let ret = service
+            .check_rank(child_id)
+            .await?
+            .ok_or_else(|| super::error::Error::ChildNotFound(child_id))?;
+        Ok(ret)
     }
 }

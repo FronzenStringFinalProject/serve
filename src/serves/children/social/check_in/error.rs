@@ -10,6 +10,9 @@ pub enum Error {
     #[error("Query Error : {0}")]
     #[resp_result(err_code = "Bad-request")]
     Query(#[from] QueryRejection),
+    #[error("Child Not Found: {0}")]
+    #[resp_result(err_code = "Not Found")]
+    ChildNotFound(i32),
 }
 
 pub type Result<T> = core::result::Result<T, Error>;
