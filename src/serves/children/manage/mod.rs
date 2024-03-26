@@ -15,6 +15,7 @@ impl ControllerRouter for ChildManagerController {
             .route("/quiz_group", get(Self::get_all_quiz_group))
             .route("/quiz_group", post(Self::add_quiz_group))
             .route("/quiz_group", delete(Self::remove_quiz_group))
+            .route("/wrong_record", delete(Self::get_wrong_record))
     }
 
     fn base(&self) -> &str {

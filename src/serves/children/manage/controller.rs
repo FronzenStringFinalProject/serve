@@ -4,6 +4,7 @@ use crate::authorize::{ChildMode, ParentAuthorizeState};
 use crate::serves::children::manage::input_models::QuizGroup;
 use axum::{extract::State, Extension, Json};
 use axum_resp_result::{resp_result, MapReject};
+use persistence::service::child_quiz_service::wrong_records::WrongQuizItem;
 use persistence::{
     operations::ChildQuizGroupOperate,
     operations::OperateTrait,
@@ -53,5 +54,15 @@ impl super::ChildManagerController {
             .one(&db, child_id, gid)
             .await?;
         Ok(())
+    }
+    #[resp_result]
+    pub async fn get_wrong_record(
+        DbService(service): DbService<ChildQuizService>,
+        Extension(ParentAuthorizeState {
+            child: ChildMode(child_id),
+            ..
+        }): Extension<ParentAuthorizeState<ChildMode>>,
+    ) -> Result<Vec<WrongQuizItem>> {
+        Ok(service.get_wrong_quiz_list(child_id).await?)
     }
 }
