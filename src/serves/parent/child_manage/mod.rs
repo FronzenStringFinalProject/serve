@@ -2,7 +2,7 @@ mod controller;
 mod error;
 mod input_models;
 mod output_models;
-use axum::routing::get;
+use axum::routing::{delete, get};
 use axum::{routing::post, Router};
 use tower_http::auth::AsyncRequireAuthorizationLayer;
 
@@ -16,6 +16,7 @@ impl ControllerRouter for ChildManageController {
     fn router(&self) -> axum::Router<crate::router::ServeState> {
         Router::new()
             .route("/children", post(Self::add))
+            .route("/children", delete(Self::remove))
             .route("/children/all", get(Self::all))
             .route("/children", get(Self::basic))
             .route(

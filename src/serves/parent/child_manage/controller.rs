@@ -37,6 +37,15 @@ impl super::ChildManageController {
         Ok(ret)
     }
     #[resp_result]
+    pub async fn remove(
+        State(db): State<PersistenceConnection>,
+        MapReject(ChildId { cid }): MapRejector<Json<ChildId>>,
+    ) -> Result<()> {
+        ChildrenOperate.delete().by_id(&db, cid).await?;
+        Ok(())
+    }
+
+    #[resp_result]
     pub async fn all(
         DbService(service): DbService<ParentChildService<PersistenceConnection>>,
         Extension(auth): Extension<ParentAuthorizeState>,
