@@ -16,7 +16,7 @@ use persistence::{
     PersistenceConnection,
 };
 
-use crate::authorize::{ChildMode, ParentAuthorizeState};
+use crate::authorize::ParentAuthorizeState;
 use crate::serves::parent::child_manage::input_models::{ChildCheckRecord, ChildId, StaticalInput};
 use crate::serves::parent::child_manage::output_models::{
     BaseChildInfo, CheckTotalInfo, ChildScoreResp,

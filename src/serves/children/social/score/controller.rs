@@ -1,11 +1,12 @@
-use super::{Error, Result};
+use axum::Extension;
+use axum_resp_result::resp_result;
+use persistence::service::{ChildSocialService, DbService};
+
 use crate::authorize::{ChildMode, ParentAuthorizeState};
 use crate::serves::children::social::score::output_models::ChildScoreResp;
 use crate::serves::children::social::score::ChildScoreController;
-use axum::Extension;
 
-use axum_resp_result::resp_result;
-use persistence::service::{ChildSocialService, DbService};
+use super::Result;
 
 impl ChildScoreController {
     #[resp_result]

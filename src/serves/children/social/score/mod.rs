@@ -1,7 +1,10 @@
-use crate::router::ServeState;
-use crate::serves::ControllerRouter;
 use axum::routing::get;
 use axum::Router;
+
+use error::Result;
+
+use crate::router::ServeState;
+use crate::serves::ControllerRouter;
 
 mod controller;
 mod error;
@@ -18,5 +21,3 @@ impl ControllerRouter for ChildScoreController {
         "/score"
     }
 }
-
-use error::{Error, Result};
