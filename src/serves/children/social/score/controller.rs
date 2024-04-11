@@ -16,10 +16,7 @@ impl ChildScoreController {
             ..
         }): Extension<ParentAuthorizeState<ChildMode>>,
     ) -> Result<ChildScoreResp> {
-        let score = service
-            .get_child_score(child_id)
-            .await?
-            .ok_or_else(|| Error::ChildNotFound(child_id))?;
+        let score = service.get_child_score(child_id).await?;
 
         Ok(score.into())
     }

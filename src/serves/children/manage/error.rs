@@ -13,6 +13,9 @@ pub enum Error {
     #[error("Database Error: {0}")]
     #[resp_result(err_msg = "Database Error")]
     Db(#[from] DbErr),
+    #[error("Child[{0}] Not Found")]
+    #[resp_result(err_code = "NotFound")]
+    ChildNotFound(i32),
 }
 
 pub type Result<T> = core::result::Result<T, Error>;

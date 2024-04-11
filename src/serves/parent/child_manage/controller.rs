@@ -8,16 +8,19 @@ use persistence::output_models::child_check::MonthlyCheckItem;
 use persistence::service::child_quiz_service::child_statical::{
     ChildQuizGroupStaticalItem, ChildResentCorrectStaticalItem, ResentType,
 };
+use persistence::service::child_quiz_service::wrong_records::WrongQuizItem;
 use persistence::service::parent_child_service::all_children::ChildItem;
-use persistence::service::{ChildQuizService, DbService, ParentChildService};
+use persistence::service::{ChildQuizService, ChildSocialService, DbService, ParentChildService};
 use persistence::{
     operations::{ChildrenOperate, OperateTrait},
     PersistenceConnection,
 };
 
-use crate::authorize::ParentAuthorizeState;
+use crate::authorize::{ChildMode, ParentAuthorizeState};
 use crate::serves::parent::child_manage::input_models::{ChildCheckRecord, ChildId, StaticalInput};
-use crate::serves::parent::child_manage::output_models::{BaseChildInfo, CheckTotalInfo};
+use crate::serves::parent::child_manage::output_models::{
+    BaseChildInfo, CheckTotalInfo, ChildScoreResp,
+};
 
 use super::{input_models::NewChild, MapRejector, Result};
 
@@ -117,5 +120,21 @@ impl super::ChildManageController {
             .total(total)
             .continual(continual_days)
             .build())
+    }
+    #[resp_result]
+    pub async fn get_score(
+        DbService(service): DbService<ChildSocialService>,
+        MapReject(ChildId { cid: child_id }): MapRejector<Query<ChildId>>,
+    ) -> Result<ChildScoreResp> {
+        let score = service.get_child_score(child_id).await?;
+
+        Ok(score.into())
+    }
+    #[resp_result]
+    pub async fn get_wrong_record(
+        DbService(service): DbService<ChildQuizService>,
+        MapReject(ChildId { cid: child_id }): MapRejector<Query<ChildId>>,
+    ) -> Result<Vec<WrongQuizItem>> {
+        Ok(service.get_wrong_quiz_list(child_id).await?)
     }
 }
