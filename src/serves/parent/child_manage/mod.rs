@@ -31,6 +31,7 @@ impl ControllerRouter for ChildManageController {
             .route("/children/statical/check", get(Self::get_check_info))
             .route("/children/score", get(Self::get_score))
             .route("/children/wrongRecords", get(Self::get_wrong_record))
+            .route("/children/activate", get(Self::get_activate_map))
             .layer(AsyncRequireAuthorizationLayer::new(
                 authorize::<false, true>,
             ))

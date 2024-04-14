@@ -3,8 +3,10 @@ use axum::{extract::State, Extension, Json};
 use axum_resp_result::{resp_result, MapReject};
 use chrono::NaiveDate;
 use log::info;
-use persistence::operations::ChildCheckOperate;
+
+use persistence::operations::{AnswerRecordOperate, ChildCheckOperate};
 use persistence::output_models::child_check::MonthlyCheckItem;
+use persistence::sea_orm::prelude::Date;
 use persistence::service::child_quiz_service::child_statical::{
     ChildQuizGroupStaticalItem, ChildResentCorrectStaticalItem, ResentType,
 };
@@ -15,6 +17,7 @@ use persistence::{
     operations::{ChildrenOperate, OperateTrait},
     PersistenceConnection,
 };
+use std::collections::HashMap;
 
 use crate::authorize::ParentAuthorizeState;
 use crate::serves::parent::child_manage::input_models::{ChildCheckRecord, ChildId, StaticalInput};
@@ -136,5 +139,15 @@ impl super::ChildManageController {
         MapReject(ChildId { cid: child_id }): MapRejector<Query<ChildId>>,
     ) -> Result<Vec<WrongQuizItem>> {
         Ok(service.get_wrong_quiz_list(child_id).await?)
+    }
+    #[resp_result]
+    pub async fn get_activate_map(
+        State(db): State<PersistenceConnection>,
+        MapReject(ChildId { cid: child_id }): MapRejector<Query<ChildId>>,
+    ) -> Result<HashMap<Date, i64>> {
+        Ok(AnswerRecordOperate
+            .retrieve()
+            .last_year_record(&db, child_id)
+            .await?)
     }
 }
