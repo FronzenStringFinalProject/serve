@@ -1,3 +1,4 @@
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use axum::extract::State;
 use axum::{Extension, Json};
 
@@ -37,14 +38,20 @@ impl ParentAuthController {
             .await?
             .ok_or(Error::ParentNotFound(unique_id))?;
 
-        if model.password == pwd {
-            let claims = ParentClaims::from_model(&model);
-            info!("current claims is :{:?}", claims);
-            let jwt = claims.encode()?;
-            Ok(jwt)
-        } else {
-            Err(Error::Password)
-        }
+        let hasher = Argon2::default();
+        tokio::task::spawn_blocking({
+            let local_pwd = model.password.clone();
+            move || {
+                let password_hash = PasswordHash::new(local_pwd.as_str())?;
+                hasher.verify_password(pwd.as_bytes(), &password_hash)?;
+                Ok::<_, super::error::Error>(())
+            }
+        })
+        .await??;
+        let claims = ParentClaims::from_model(&model);
+        info!("current claims is :{:?}", claims);
+        let jwt = claims.encode()?;
+        Ok(jwt)
     }
     #[resp_result]
     pub async fn access(
@@ -52,12 +59,19 @@ impl ParentAuthController {
         MapReject(ParentSecret { secret }): MapRejecter<Json<ParentSecret>>,
     ) -> Result<String> {
         let mut claim = ParentClaims::from_model(&model);
-        if model.secret == secret {
-            claim.parent_mode();
-            Ok(claim.encode()?)
-        } else {
-            Err(Error::BadSecret)
-        }
+
+        let hasher = Argon2::default();
+        tokio::task::spawn_blocking({
+            let local_pwd = model.secret.clone();
+            move || {
+                let password_hash = PasswordHash::new(local_pwd.as_str())?;
+                hasher.verify_password(secret.as_bytes(), &password_hash)?;
+                Ok::<_, super::error::Error>(())
+            }
+        })
+        .await??;
+        claim.parent_mode();
+        Ok(claim.encode()?)
     }
     #[resp_result]
     pub async fn child(

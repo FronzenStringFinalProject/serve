@@ -11,15 +11,9 @@ pub enum Error {
     #[error("parent not found error :{0}")]
     #[resp_result(err_code = "NotFound")]
     ParentNotFound(String),
-    #[error("password not match error")]
-    #[resp_result(err_code = 401)]
-    Password,
     #[error("Jwt error: {0}")]
     #[resp_result(err_code = 401)]
     Jwt(#[from] jsonwebtoken::errors::Error),
-    #[error("access secret not match")]
-    #[resp_result(err_code = 401)]
-    BadSecret,
     #[error("Deserialize Json Error: {0}")]
     #[resp_result(err_code = "BadRequest")]
     Json(#[from] JsonRejection),
@@ -28,6 +22,14 @@ pub enum Error {
     Path(#[from] PathRejection),
     #[error("Extension Item Not Found: {0}")]
     Extension(#[from] ExtensionRejection),
+    #[error("Argon2 Verify Failure: {0}")]
+    #[resp_result(err_code = 401, err_msg = "Bad Password")]
+    Argon2(#[from] argon2::Error),
+    #[error("PasswordHash Encode Error : {0}")]
+    #[resp_result(err_msg = "Bad Password Encode")]
+    PasswordHash(#[from] password_hash::Error),
+    #[error("Tokio Join Task Error : {0}")]
+    TokioTask(#[from] tokio::task::JoinError),
 }
 
 pub(super) type Result<T> = core::result::Result<T, Error>;
