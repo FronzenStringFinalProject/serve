@@ -4,8 +4,11 @@ use axum::{Extension, Json};
 
 use axum_resp_result::{resp_result, MapReject};
 use log::info;
+use password_hash::{PasswordHasher, SaltString};
 use persistence::operations::{OperateTrait, ParentOperate};
 use persistence::PersistenceConnection;
+use rand::rngs::OsRng;
+
 
 use crate::authorize::user_tokens::parent::ParentClaims;
 use crate::authorize::user_tokens::{FromModel, JwtConvert};
@@ -19,8 +22,30 @@ impl ParentAuthController {
     #[resp_result]
     pub async fn register(
         State(db): State<PersistenceConnection>,
-        MapReject(new_parent): MapRejecter<Json<ParentRegister>>,
+        MapReject(mut new_parent): MapRejecter<Json<ParentRegister>>,
     ) -> Result<()> {
+        let encoded_pwd = tokio::task::spawn_blocking({
+            let hasher = Argon2::default();
+            let local_pwd = new_parent.password.clone();
+            let salt = SaltString::generate(&mut OsRng);
+            move || {
+                let pwd = hasher.hash_password(local_pwd.as_bytes(), &salt)?;
+                Ok::<_, super::error::Error>(pwd.to_string())
+            }
+        })
+        .await??;
+        let encoded_secret = tokio::task::spawn_blocking({
+            let hasher = Argon2::default();
+            let local_secret = new_parent.secret.clone();
+            let salt = SaltString::generate(&mut OsRng);
+            move || {
+                let pwd = hasher.hash_password(local_secret.as_bytes(), &salt)?;
+                Ok::<_, super::error::Error>(pwd.to_string())
+            }
+        })
+        .await??;
+        new_parent.secret = encoded_secret;
+        new_parent.password = encoded_pwd;
         ParentOperate
             .insert()
             .new_parent(&db, new_parent.into())
@@ -81,5 +106,12 @@ impl ParentAuthController {
         let mut claim = ParentClaims::from_model(&model);
         claim.child_mode(cid);
         Ok(claim.encode()?)
+    }
+
+    #[resp_result]
+    pub async fn parent_name(
+        Extension(ParentAuthorizeState { model, .. }): Extension<ParentAuthorizeState>,
+    ) -> Result<String> {
+        Ok(model.name)
     }
 }

@@ -1,3 +1,4 @@
+use axum::routing::get;
 use axum::{routing::post, Router};
 use tower_http::auth::AsyncRequireAuthorizationLayer;
 
@@ -20,6 +21,7 @@ impl ControllerRouter for ParentAuthController {
                 Router::new()
                     .route("/access", post(Self::access))
                     .route("/to_child", post(Self::child))
+                    .route("/name", get(Self::parent_name))
                     .layer(AsyncRequireAuthorizationLayer::new(
                         authorize::<false, false>,
                     )),
