@@ -9,7 +9,6 @@ use persistence::operations::{OperateTrait, ParentOperate};
 use persistence::PersistenceConnection;
 use rand::rngs::OsRng;
 
-
 use crate::authorize::user_tokens::parent::ParentClaims;
 use crate::authorize::user_tokens::{FromModel, JwtConvert};
 use crate::authorize::{ChildMode, ParentAuthorizeState};
