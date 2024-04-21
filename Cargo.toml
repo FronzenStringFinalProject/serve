@@ -10,7 +10,7 @@ argon2 = { version = "0.5.3", features = ["std"] }
 axum = { version = "0.7.4" }
 axum-macros = "0.4.1"
 axum-resp-result = { version = "0.7.1", features = ["log"] }
-axum-starter = { version = "0.9.0", features = ["logger"] }
+axum-starter = { version = "0.10.0", features = ["logger"] }
 chrono = { version = "0.4.35", features = ["serde"] }
 figment = { version = "0.10.14", features = ["toml"] }
 http = "1.0.0"
@@ -26,6 +26,6 @@ static_assertions = "1.1.0"
 thiserror = "1.0.57"
 tokio = { version = "1.36.0", features = ["signal"] }
 tower = "0.4.13"
-tower-http = { version = "0.5.1", features = ["trace", "auth", "catch-panic","cors"] }
+tower-http = { version = "0.5.1", features = ["trace", "auth", "catch-panic", "cors"] }
 typed-builder = "0.18.1"
 url = "2.5.0"
