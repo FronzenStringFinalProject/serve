@@ -1,3 +1,4 @@
+use crate::post_prepare::exec_irt;
 use axum::routing::Route;
 use axum_starter::ServerPrepare;
 use persistence::{ConnectSQL, PersistenceConnection};
@@ -10,9 +11,11 @@ use tower_http::{catch_panic::CatchPanicLayer, trace::TraceLayer};
 mod authorize;
 mod config;
 mod middlewares;
+mod post_prepare;
 mod router;
 mod serves;
 mod starter;
+
 fn main() {
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_all()
@@ -43,6 +46,7 @@ async fn entry() {
         // move state
         .prepare_middleware::<Route, _>(StateToExtension::<_, PersistenceConnection>)
         .convert_state()
+        .post_prepare(exec_irt)
         .graceful_shutdown(async {
             ctrl_c().await.ok();
         })
