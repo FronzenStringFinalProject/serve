@@ -3,8 +3,6 @@ use axum::Extension;
 use axum_resp_result::resp_result;
 use persistence::operations::{ChildCheckOperate, OperateTrait};
 use persistence::sea_orm::prelude::Date;
-use persistence::service::child_social::ChildRank;
-use persistence::service::{ChildSocialService, DbService};
 use persistence::PersistenceConnection;
 
 use crate::authorize::{ChildMode, ParentAuthorizeState};

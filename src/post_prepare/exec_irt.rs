@@ -7,7 +7,7 @@ use std::time::Duration;
 use tokio::time::{interval, MissedTickBehavior};
 
 pub async fn exec_irt(db: PersistenceConnection) {
-    let mut interval = interval(Duration::from_secs(1145141919810));
+    let mut interval = interval(Duration::from_secs(10800));
     interval.set_missed_tick_behavior(MissedTickBehavior::Delay);
 
     loop {
