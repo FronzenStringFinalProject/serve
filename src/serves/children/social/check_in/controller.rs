@@ -77,19 +77,4 @@ impl ChildCheckInController {
 
         Ok(resp.into_iter().map(|item| item.check_date).collect())
     }
-
-    #[resp_result]
-    pub async fn get_check_in_rank(
-        DbService(service): DbService<ChildSocialService>,
-        Extension(ParentAuthorizeState {
-            child: ChildMode(child_id),
-            ..
-        }): Extension<ParentAuthorizeState<ChildMode>>,
-    ) -> Result<ChildRank> {
-        let ret = service
-            .check_rank(child_id)
-            .await?
-            .ok_or_else(|| super::error::Error::ChildNotFound(child_id))?;
-        Ok(ret)
-    }
 }

@@ -18,7 +18,6 @@ impl ControllerRouter for ChildCheckInController {
             .route("/check/available", get(Self::can_check))
             .route("/check", get(Self::get_check_info))
             .route("/check/month", get(Self::get_month_check_record))
-            .route("/check/rank", get(Self::get_check_in_rank))
     }
 
     fn base(&self) -> &str {
